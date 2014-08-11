@@ -893,11 +893,11 @@ static void run_z_probe() {
 #ifdef DELTA
   #ifdef FSR_BED_LEVELING
     feedrate = 600; //mm/min
-    float step = 0.05;
+    float step = 0.025;
     int direction = -1;
     // Consider the glass touched if the raw ADC value is reduced by 5% or more.
     int analog_fsr_untouched = rawBedSample();
-    int threshold = analog_fsr_untouched * 95L / 100;
+    int threshold = ((double) analog_fsr_untouched * 93L) / 100;
     while (!touching_print_surface(threshold)) {
       destination[Z_AXIS] += step * direction;
       prepare_move_raw();
@@ -1089,10 +1089,20 @@ static float probe_pt(float x, float y, float z_before) {
 #ifdef SERVO_ENDSTOPS
   engage_z_probe();   // Engage Z Servo endstop if available
 #endif //SERVO_ENDSTOPS
-
+  float measured_z_0, measured_z_1;
+  
   run_z_probe();
-  float measured_z = current_position[Z_AXIS];
-
+  do {
+    measured_z_0 = current_position[Z_AXIS];
+    
+    feedrate = homing_feedrate[Z_AXIS];  
+    destination[Z_AXIS] = current_position[Z_AXIS] + Z_RAISE_BETWEEN_PROBINGS;
+    prepare_move_raw();
+    st_synchronize();
+  
+    run_z_probe();
+  } while (abs(current_position[Z_AXIS] - measured_z_0) > 0.05);
+  measured_z_0 = current_position[Z_AXIS];
 #ifdef SERVO_ENDSTOPS
   retract_z_probe();
 #endif //SERVO_ENDSTOPS
@@ -1102,14 +1112,14 @@ static float probe_pt(float x, float y, float z_before) {
   SERIAL_PROTOCOL(x);
   SERIAL_PROTOCOLPGM(" y: ");
   SERIAL_PROTOCOL(y);
-  SERIAL_PROTOCOLPGM(" z: ");
-  SERIAL_PROTOCOL(measured_z);
+  SERIAL_PROTOCOLPGM(" z0: ");
+  SERIAL_PROTOCOL(measured_z_0);
 #ifdef FSR_BED_LEVELING
   SERIAL_PROTOCOLPGM(" FSR: ");
   SERIAL_PROTOCOL(rawBedSample());
 #endif
   SERIAL_PROTOCOLPGM("\n");
-  return measured_z;
+  return measured_z_0;
 }
 
 #endif // #ifdef ENABLE_AUTO_BED_LEVELING
@@ -1585,6 +1595,7 @@ void process_commands()
             setup_for_endstop_move();
 
             feedrate = homing_feedrate[Z_AXIS];
+            feedrate = 3000;
 #ifdef ACCURATE_BED_LEVELING
             // solve the plane equation ax + by + d = z
             // A is the matrix with rows [x y 1] for all the probed points
@@ -1681,7 +1692,7 @@ void process_commands()
             float z_at_xLeft_yFront = probe_pt(LEFT_PROBE_BED_POSITION, FRONT_PROBE_BED_POSITION, current_position[Z_AXIS] + Z_RAISE_BETWEEN_PROBINGS);
 
             // prob 3
-            float z_at_xRight_yFront = probe_pt(RIGHT_PROBE_BED_POSITION, FRONT_PROBE_BED_POSITION, current_position[Z_AXIS] + Z_RAISE_BETWEEN_PROBINGS);
+            float z_at_xRight_yFront = G(RIGHT_PROBE_BED_POSITION, FRONT_PROBE_BED_POSITION, current_position[Z_AXIS] + Z_RAISE_BETWEEN_PROBINGS);
 
             clean_up_after_endstop_move();
 

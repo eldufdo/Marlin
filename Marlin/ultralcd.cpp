@@ -456,6 +456,8 @@ static void lcd_prepare_menu()
 float move_menu_scale;
 static void lcd_move_menu_axis();
 
+
+
 static void lcd_move_x()
 {
     if (encoderPosition != 0)
@@ -529,9 +531,9 @@ static void lcd_move_z()
         encoderPosition = 0;
         #ifdef DELTA
         calculate_delta(current_position);
-        plan_buffer_line(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS], current_position[E_AXIS], manual_feedrate[Z_AXIS]/60, active_extruder);
+        plan_buffer_line(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS], current_position[E_AXIS], manual_feedrate[Z_AXIS]/2, active_extruder);
         #else
-        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[Z_AXIS]/60, active_extruder);
+        plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[Z_AXIS]/2, active_extruder);
         #endif
         lcdDrawUpdate = 1;
     }
@@ -554,7 +556,11 @@ static void lcd_move_e()
         encoderPosition = 0;
         #ifdef DELTA
         calculate_delta(current_position);
-        plan_buffer_line(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS], current_position[E_AXIS], manual_feedrate[E_AXIS]/60, active_extruder);
+	if (encoderPosition < 0)
+        	plan_buffer_line(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS], current_position[E_AXIS], manual_feedrate[E_AXIS]/60, active_extruder);
+	else 
+        	plan_buffer_line(delta[X_AXIS], delta[Y_AXIS], delta[Z_AXIS], current_position[E_AXIS], manual_feedrate[E_AXIS]/3, active_extruder);
+
         #else
         plan_buffer_line(current_position[X_AXIS], current_position[Y_AXIS], current_position[Z_AXIS], current_position[E_AXIS], manual_feedrate[E_AXIS]/60, active_extruder);
         #endif
@@ -578,11 +584,8 @@ static void lcd_move_menu_axis()
     MENU_ITEM(back, MSG_MOVE_AXIS, lcd_move_menu);
     MENU_ITEM(submenu, MSG_MOVE_X, lcd_move_x);
     MENU_ITEM(submenu, MSG_MOVE_Y, lcd_move_y);
-    if (move_menu_scale < 10.0)
-    {
-        MENU_ITEM(submenu, MSG_MOVE_Z, lcd_move_z);
-        MENU_ITEM(submenu, MSG_MOVE_E, lcd_move_e);
-    }
+    MENU_ITEM(submenu, MSG_MOVE_Z, lcd_move_z);
+    MENU_ITEM(submenu, MSG_MOVE_E, lcd_move_e);
     END_MENU();
 }
 
