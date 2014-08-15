@@ -56,12 +56,14 @@ static void lcd_control_temperature_menu();
 static void lcd_control_temperature_preheat_pla_settings_menu();
 static void lcd_control_temperature_preheat_abs_settings_menu();
 static void lcd_control_motion_menu();
+static void lcd_bedlevel_menu();
 #ifdef DOGLCD
 static void lcd_set_contrast();
 #endif
 static void lcd_control_retract_menu();
 static void lcd_sdcard_menu();
 
+static void lcd_bed_level_zoffset();
 static void lcd_quick_feedback();//Cause an LCD refresh, and give the user visual or audiable feedback that something has happend
 
 /* Different types of actions that can be used in menuitems. */
@@ -267,6 +269,7 @@ static void lcd_main_menu()
         MENU_ITEM(submenu, MSG_PREPARE, lcd_prepare_menu);
     }
     MENU_ITEM(submenu, MSG_CONTROL, lcd_control_menu);
+    MENU_ITEM(submenu, "Auto Bed Level", lcd_bedlevel_menu);
 #ifdef SDSUPPORT
     if (card.cardOK)
     {
@@ -456,6 +459,40 @@ static void lcd_prepare_menu()
 float move_menu_scale;
 static void lcd_move_menu_axis();
 
+static void lcd_bedlevel_menu()
+{
+    START_MENU();
+    MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
+    MENU_ITEM(submenu,MSG_ZPROBE_ZOFFSET,lcd_bed_level_zoffset);
+    MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28"));
+    MENU_ITEM(gcode, MSG_AUTO_LEVEL, PSTR("G29"));
+    MENU_ITEM(gcode, MSG_AUTO_LEVEL_POINT, PSTR("G29"));
+    MENU_ITEM(gcode, MSG_STORE_EPROM, PSTR("M500"));
+    MENU_ITEM(gcode, MSG_STORE_EPROM, PSTR("M501"));
+    END_MENU();
+}
+
+
+static void lcd_bed_level_zoffset()
+{
+    if (encoderPosition != 0)
+    {
+        refresh_cmd_timeout();
+	zprobe_zoffset += float((int)encoderPosition*0.01);
+	encoderPosition = 0;
+        lcdDrawUpdate = 1;
+    }
+    if (lcdDrawUpdate)
+    {
+        lcd_implementation_drawedit(PSTR("Encoder"), ftostr32(zprobe_zoffset));
+    }
+    if (LCD_CLICKED)
+    {
+        lcd_quick_feedback();
+        currentMenu = lcd_bedlevel_menu;
+        encoderPosition = 0;
+    }
+}
 
 
 static void lcd_move_x()
@@ -616,6 +653,7 @@ static void lcd_move_menu()
     END_MENU();
 }
 
+
 static void lcd_control_menu()
 {
     START_MENU();
@@ -713,7 +751,7 @@ static void lcd_control_motion_menu()
     START_MENU();
     MENU_ITEM(back, MSG_CONTROL, lcd_control_menu);
 #ifdef ENABLE_AUTO_BED_LEVELING
-    MENU_ITEM_EDIT(float32, MSG_ZPROBE_ZOFFSET, &zprobe_zoffset, 0.5, 50);
+    MENU_ITEM_EDIT(float32, MSG_ZPROBE_ZOFFSET, &zprobe_zoffset, 0, 50);
 #endif
     MENU_ITEM_EDIT(float5, MSG_ACC, &acceleration, 500, 99000);
     MENU_ITEM_EDIT(float3, MSG_VXY_JERK, &max_xy_jerk, 1, 990);
