@@ -1,4 +1,5 @@
 *.o
+build-mega2560/
 applet/
 *~
 *.orig
