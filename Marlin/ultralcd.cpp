@@ -468,7 +468,7 @@ static void lcd_bedlevel_menu()
     MENU_ITEM(gcode, MSG_AUTO_LEVEL, PSTR("G29"));
     MENU_ITEM(gcode, MSG_AUTO_LEVEL_POINT, PSTR("G29"));
     MENU_ITEM(gcode, MSG_STORE_EPROM, PSTR("M500"));
-    MENU_ITEM(gcode, MSG_STORE_EPROM, PSTR("M501"));
+    MENU_ITEM(gcode, MSG_LOAD_EPROM, PSTR("M501"));
     END_MENU();
 }
 
