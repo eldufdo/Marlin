@@ -254,7 +254,10 @@ float delta[3] = {0.0, 0.0, 0.0};
 #endif
 
 #ifdef NONLINEAR_BED_LEVELING
-float bed_level[ACCURATE_BED_LEVELING_POINTS][ACCURATE_BED_LEVELING_POINTS];
+int accurate_bed_leveling_points;
+float accurate_bed_leveling_grid_x;
+float accurate_bed_leveling_grid_y;
+float **bed_level;
 #endif
 
 //===========================================================================
@@ -499,6 +502,11 @@ void setup()
   // loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
   Config_RetrieveSettings();
 
+
+  #ifdef NONLINEAR_BED_LEVELING
+  bed_level_init();
+  #endif
+
   tp_init();    // Initialize temperature loop
   plan_init();  // Initialize planner;
   watchdog_init();
@@ -738,6 +746,23 @@ void get_command()
 
 }
 
+void bed_level_init() 
+{
+  bed_level = (float **) malloc(sizeof(float *) * accurate_bed_leveling_points);	
+  uint8_t i,j;
+  for (i = 0; i < accurate_bed_leveling_points;i++) {
+	bed_level[i] = (float *) malloc(sizeof(float) * accurate_bed_leveling_points);
+  }
+  for (i = 0; i < accurate_bed_leveling_points; i++) {
+	for (j = 0; j < accurate_bed_leveling_points; j++) {
+		bed_level[i][j] = 0;
+	}
+  }
+
+  accurate_bed_leveling_grid_x = ((RIGHT_PROBE_BED_POSITION - LEFT_PROBE_BED_POSITION) / (accurate_bed_leveling_points- 1));
+  accurate_bed_leveling_grid_y = ((BACK_PROBE_BED_POSITION - FRONT_PROBE_BED_POSITION) / (accurate_bed_leveling_points- 1));
+  
+}
 
 float code_value()
 {
@@ -910,7 +935,7 @@ static void run_z_probe() {
 #ifdef DELTA
   #ifdef FSR_BED_LEVELING
     feedrate = 600; //mm/min
-    float step = 0.025;
+    float step = 0.0125;
     int direction = -1;
     // Consider the glass touched if the raw ADC value is reduced by 5% or more.
     int analog_fsr_untouched = rawBedSample();
@@ -1163,7 +1188,7 @@ static void extrapolate_one_point(int x, int y, int xdir, int ydir) {
 // Fill in the unprobed points (corners of circular print surface)
 // using linear extrapolation, away from the center.
 static void extrapolate_unprobed_bed_level() {
-  int half = (ACCURATE_BED_LEVELING_POINTS-1)/2;
+  int half = (accurate_bed_leveling_points-1)/2;
   for (int y = 0; y <= half; y++) {
     for (int x = 0; x <= half; x++) {
       if (x + y < 3) continue;
@@ -1177,8 +1202,8 @@ static void extrapolate_unprobed_bed_level() {
 
 // Print calibration results for plotting or manual frame adjustment.
 static void print_bed_level() {
-  for (int y = 0; y < ACCURATE_BED_LEVELING_POINTS; y++) {
-    for (int x = 0; x < ACCURATE_BED_LEVELING_POINTS; x++) {
+  for (int y = 0; y < accurate_bed_leveling_points; y++) {
+    for (int x = 0; x < accurate_bed_leveling_points; x++) {
       SERIAL_PROTOCOL_F(bed_level[x][y], 2);
       SERIAL_PROTOCOLPGM(" ");
     }
@@ -1188,8 +1213,8 @@ static void print_bed_level() {
 
 // Reset calibration results to zero.
 static void reset_bed_level() {
-  for (int y = 0; y < ACCURATE_BED_LEVELING_POINTS; y++) {
-    for (int x = 0; x < ACCURATE_BED_LEVELING_POINTS; x++) {
+  for (int y = 0; y < accurate_bed_leveling_points; y++) {
+    for (int x = 0; x < accurate_bed_leveling_points; x++) {
       bed_level[x][y] = 0.0;
     }
   }
@@ -1419,35 +1444,42 @@ void process_commands()
             // so Vx = -a Vy = -b Vz = 1 (we want the vector facing towards positive Z
 
             // "A" matrix of the linear system of equations
-            double eqnAMatrix[ACCURATE_BED_LEVELING_POINTS*ACCURATE_BED_LEVELING_POINTS*3];
+            double eqnAMatrix[accurate_bed_leveling_points*accurate_bed_leveling_points*3];
             // "B" vector of Z points
-            double eqnBVector[ACCURATE_BED_LEVELING_POINTS*ACCURATE_BED_LEVELING_POINTS];
+            double eqnBVector[accurate_bed_leveling_points*accurate_bed_leveling_points];
 
             #ifdef NONLINEAR_BED_LEVELING
             float z_offset = Z_PROBE_OFFSET_FROM_EXTRUDER;
             if (code_seen(axis_codes[Z_AXIS])) {
               z_offset += code_value();
             }
+            SERIAL_PROTOCOLPGM("Nonlinear Ninja\n");
             #endif //NONLINEAR_BED_LEVELING
 
             int probePointCounter = 0;
-            for (int yCount=0; yCount < ACCURATE_BED_LEVELING_POINTS; yCount++)
+		
+            SERIAL_PROTOCOLPGM("Accurate Points: ");
+            SERIAL_PROTOCOL(accurate_bed_leveling_points);
+            for (int yCount=0; yCount < accurate_bed_leveling_points; yCount++)
             {
-              float yProbe = FRONT_PROBE_BED_POSITION + ACCURATE_BED_LEVELING_GRID_Y * yCount;
+
+	      SERIAL_PROTOCOLPGM("Y");
+              float yProbe = FRONT_PROBE_BED_POSITION + accurate_bed_leveling_grid_y * yCount;
               int xStart, xStop, xInc;
               if (yCount % 2) {
                 xStart = 0;
-                xStop = ACCURATE_BED_LEVELING_POINTS;
+                xStop = accurate_bed_leveling_points;
                 xInc = 1;
               } else {
-                xStart = ACCURATE_BED_LEVELING_POINTS - 1;
+                xStart = accurate_bed_leveling_points - 1;
                 xStop = -1;
                 xInc = -1;
               }
 
               for (int xCount=xStart; xCount != xStop; xCount += xInc)
               {
-                float xProbe = LEFT_PROBE_BED_POSITION + ACCURATE_BED_LEVELING_GRID_X * xCount;
+	        SERIAL_PROTOCOLPGM("X");
+                float xProbe = LEFT_PROBE_BED_POSITION + accurate_bed_leveling_grid_x * xCount;
 
                 #ifdef DELTA
                 // Avoid probing the corners (outside the round or hexagon print surface) on a delta printer.
@@ -1465,9 +1497,9 @@ void process_commands()
 
                 eqnBVector[probePointCounter] = measured_z;
 
-                eqnAMatrix[probePointCounter + 0*ACCURATE_BED_LEVELING_POINTS*ACCURATE_BED_LEVELING_POINTS] = xProbe;
-                eqnAMatrix[probePointCounter + 1*ACCURATE_BED_LEVELING_POINTS*ACCURATE_BED_LEVELING_POINTS] = yProbe;
-                eqnAMatrix[probePointCounter + 2*ACCURATE_BED_LEVELING_POINTS*ACCURATE_BED_LEVELING_POINTS] = 1;
+                eqnAMatrix[probePointCounter + 0*accurate_bed_leveling_points*accurate_bed_leveling_points] = xProbe;
+                eqnAMatrix[probePointCounter + 1*accurate_bed_leveling_points*accurate_bed_leveling_points] = yProbe;
+                eqnAMatrix[probePointCounter + 2*accurate_bed_leveling_points*accurate_bed_leveling_points] = 1;
                 probePointCounter++;
 
                 manage_heater();
@@ -1482,7 +1514,7 @@ void process_commands()
             print_bed_level();
           #else
             // solve lsq problem
-            double *plane_equation_coefficients = qr_solve(ACCURATE_BED_LEVELING_POINTS*ACCURATE_BED_LEVELING_POINTS, 3, eqnAMatrix, eqnBVector);
+            double *plane_equation_coefficients = qr_solve(accurate_bed_leveling_points*accurate_bed_leveling_points, 3, eqnAMatrix, eqnBVector);
 
             SERIAL_PROTOCOLPGM("Eqn coefficients: a: ");
             SERIAL_PROTOCOL(plane_equation_coefficients[0]);
@@ -3153,9 +3185,9 @@ void calculate_delta(float cartesian[3])
 // Adjust print surface height by linear interpolation over the bed_level array.
 void adjust_delta(float cartesian[3])
 {
-  int half = (ACCURATE_BED_LEVELING_POINTS - 1) / 2;
-  float grid_x = max(0.001-half, min(half-0.001, cartesian[X_AXIS] / ACCURATE_BED_LEVELING_GRID_X));
-  float grid_y = max(0.001-half, min(half-0.001, cartesian[Y_AXIS] / ACCURATE_BED_LEVELING_GRID_Y));
+  int half = (accurate_bed_leveling_points - 1) / 2;
+  float grid_x = max(0.001-half, min(half-0.001, cartesian[X_AXIS] / accurate_bed_leveling_grid_x));
+  float grid_y = max(0.001-half, min(half-0.001, cartesian[Y_AXIS] / accurate_bed_leveling_grid_y));
   int floor_x = floor(grid_x);
   int floor_y = floor(grid_y);
   float ratio_x = grid_x - floor_x;

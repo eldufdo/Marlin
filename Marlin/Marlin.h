@@ -216,6 +216,11 @@ extern float min_pos[3];
 extern float max_pos[3];
 extern bool axis_known_position[3];
 extern float zprobe_zoffset;
+extern int accurate_bed_leveling_points;
+void bed_level_init();
+extern float **bed_level;
+extern float accurate_bed_leveling_grid_x;
+extern float accurate_bed_leveling_grid_y;
 extern int fanSpeed;
 #ifdef BARICUDA
 extern int ValvePressure;
