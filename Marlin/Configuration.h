@@ -741,7 +741,11 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #ifdef ENABLE_WS2812 
 
-#define WS2812_PIN 6
+// WS2812 Connection Plan
+// AUX 1
+// 5V  |  GND | TX          | RX 
+// 5V  |  GND | WS2812 Data | D58
+#define WS2812_PIN 57
 #define WS2812_NUM_LEDS 29
 
 #ifdef ENABLE_START_UP_ANIMATION
