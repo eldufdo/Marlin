@@ -1,5 +1,6 @@
 #include "Led.h"
 #include <Configuration.h>
+#include "cardreader.h"
 
 Led::Led() 
 {
@@ -18,10 +19,36 @@ void Led::bootAnimation()
 	{
 		pixels->setPixelColor(i, pixels->Color(0,150,0)); // Moderately bright green color.
 		pixels->show(); // This sends the updated pixel color to the hardware.
-		delay(100); // Delay for a period of time (in milliseconds).
+		delay(50); // Delay for a period of time (in milliseconds).
+	}
+	for(int i=0;i<WS2812_NUM_LEDS;i++)
+	{
+		pixels->setPixelColor(i, pixels->Color(150,0,0)); // Moderately bright green color.
+		pixels->show(); // This sends the updated pixel color to the hardware.
+		delay(50); // Delay for a period of time (in milliseconds).
+	}
+	for(int i=0;i<WS2812_NUM_LEDS;i++)
+	{
+		pixels->setPixelColor(i, pixels->Color(0,0,150)); // Moderately bright green color.
+		pixels->show(); // This sends the updated pixel color to the hardware.
+		delay(50); // Delay for a period of time (in milliseconds).
 	}
 }
 
+void Led::showProgress() {
+	if (IS_SD_PRINTING) {
+		uint8_t progress = card.percentDone();
+		uint8_t led_step = 100/WS2812_NUM_LEDS;
+		uint8_t i;
+		uint8_t s = 0;
+		this->clear();
+		for (i = 0; i < progress;i+=led_step) {
+			this->setPixel(s,0,0,180);
+			s++;
+		}
+		this->show();
+	}
+}
 
 void Led::setPixel(uint16_t index,uint8_t r, uint8_t g, uint8_t b) 
 {

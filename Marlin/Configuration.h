@@ -748,6 +748,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define WS2812_PIN 57
 #define WS2812_NUM_LEDS 29
 
+#define WS2812_SHOW_SD_PROGRESS
+
 #ifdef ENABLE_START_UP_ANIMATION
 	#define WS2812_KNIGHT_RIDER_ANIMATION
 #endif

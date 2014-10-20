@@ -454,6 +454,8 @@ void servo_init()
 #ifdef ENABLE_WS2812
 void setup_leds() {
 	led.bootAnimation();
+	led.clear();
+	led.show();
 }
 #endif
 
@@ -573,6 +575,11 @@ void loop()
   manage_inactivity();
   checkHitEndstops();
   lcd_update();
+  #ifdef ENABLE_WS2812
+  #ifdef WS2812_SHOW_SD_PROGRESS
+  led.showProgress();
+  #endif
+  #endif
 }
 
 void get_command()
@@ -2683,7 +2690,7 @@ void process_commands()
 	{
 		r = code_value();
 	}
-	if (code_seen('G')) 
+	if (code_seen('C')) 
 	{
 		g = code_value();
 	}
@@ -2696,6 +2703,10 @@ void process_commands()
 		break;
 	}
 	led.setPixel(index,r,g,b);
+	SERIAL_PROTOCOLLN(index);
+	SERIAL_PROTOCOLLN(r);
+	SERIAL_PROTOCOLLN(g);
+	SERIAL_PROTOCOLLN(b);
     }
     break;
     case 422:
@@ -2706,6 +2717,13 @@ void process_commands()
     case 423:
     {
 	    led.clear();
+    }
+    break;
+    case 424:
+    {
+	#ifdef SDSUPPORT
+	
+	#endif
     }
     break;
 #endif
