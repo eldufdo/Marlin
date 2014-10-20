@@ -47,10 +47,14 @@
 #include "language.h"
 #include "pins_arduino.h"
 #include "math.h"
-
 #ifdef BLINKM
 #include "BlinkM.h"
 #include "Wire.h"
+#endif
+
+#ifdef ENABLE_WS2812
+#include "Adafruit_NeoPixel.h"
+#include "Led.h"
 #endif
 
 #if NUM_SERVOS > 0
@@ -297,6 +301,11 @@ bool Stopped=false;
   Servo servos[NUM_SERVOS];
 #endif
 
+
+#ifdef ENABLE_WS2812
+Led led;
+#endif
+
 bool CooldownNoWait = true;
 bool target_direction;
 
@@ -438,14 +447,23 @@ void servo_init()
   #endif
 }
 
+#ifdef ENABLE_WS2812
+void setup_leds() {
+	led.bootAnimation();
+}
+#endif
+
+
 void setup()
 {
   setup_killpin();
   setup_powerhold();
+  #ifdef ENABLE_WS2812
+  setup_leds();
+  #endif
   MYSERIAL.begin(BAUDRATE);
   SERIAL_PROTOCOLLNPGM("start");
   SERIAL_ECHO_START;
-
   // Check startup - does nothing if bootloader sets MCUSR to 0
   byte mcu = MCUSR;
   if(mcu & 1) SERIAL_ECHOLNPGM(MSG_POWERUP);
