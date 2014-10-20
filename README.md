@@ -21,6 +21,7 @@ Lampmaker, Bradley Feldman, and others...
 Features:
 =========
 
+*   Added support for Ws2812 Led strips
 *   Interrupt based movement with real linear acceleration
 *   High steprate
 *   Look ahead (Keep the speed high when possible. High cornering speed)
@@ -227,6 +228,10 @@ M Codes
 *  M400 - Finish all moves
 *  M401 - Lower z-probe if present
 *  M402 - Raise z-probe if present
+*  M421 - M421 I<index> R<red> C<green> B<blue> - Set the color of a specific led on a WS2812 strip
+*  M422 - Latch the colors set for the Ledstrip to the leds 
+*  M423 - clear the led buffer - does not update leds - call M422 to do that
+*  M424 - Display SD Card Printing progress on the leds 
 *  M500 - stores paramters in EEPROM
 *  M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
 *  M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.

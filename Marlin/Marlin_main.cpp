@@ -2722,7 +2722,7 @@ void process_commands()
     case 424:
     {
 	#ifdef SDSUPPORT
-	
+	led.showProgress();
 	#endif
     }
     break;
