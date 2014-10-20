@@ -71,6 +71,7 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i,absPreheatHPBTemp);
   EEPROM_WRITE_VAR(i,absPreheatFanSpeed);
   EEPROM_WRITE_VAR(i,zprobe_zoffset);
+  EEPROM_WRITE_VAR(i,accurate_bed_leveling_points);
   #ifdef PIDTEMP
     EEPROM_WRITE_VAR(i,Kp);
     EEPROM_WRITE_VAR(i,Ki);
@@ -157,6 +158,13 @@ void Config_PrintSettings()
     SERIAL_ECHOPAIR(" Y" ,endstop_adj[1] );
     SERIAL_ECHOPAIR(" Z" ,endstop_adj[2] );
     SERIAL_ECHOLN("");
+    SERIAL_ECHO_START;
+    SERIAL_ECHOPAIR(" Z-Offset Autolevel: ",zprobe_zoffset);
+    SERIAL_ECHOLN("");
+    SERIAL_ECHO_START;
+    SERIAL_ECHOPGM("Auto Bed Leveling: ");
+    SERIAL_ECHO(accurate_bed_leveling_points);
+    SERIAL_ECHOLN("");
 #endif
 #ifdef PIDTEMP
     SERIAL_ECHO_START;
@@ -212,6 +220,7 @@ void Config_RetrieveSettings()
         EEPROM_READ_VAR(i,absPreheatHPBTemp);
         EEPROM_READ_VAR(i,absPreheatFanSpeed);
         EEPROM_READ_VAR(i,zprobe_zoffset);
+        EEPROM_READ_VAR(i,accurate_bed_leveling_points);
         #ifndef PIDTEMP
         float Kp,Ki,Kd;
         #endif
@@ -276,6 +285,7 @@ void Config_ResetDefault()
 #endif
 #ifdef ENABLE_AUTO_BED_LEVELING
     zprobe_zoffset = -Z_PROBE_OFFSET_FROM_EXTRUDER;
+    accurate_bed_leveling_points = ACCURATE_BED_LEVELING_POINTS;
 #endif
 #ifdef DOGLCD
     lcd_contrast = DEFAULT_LCD_CONTRAST;
