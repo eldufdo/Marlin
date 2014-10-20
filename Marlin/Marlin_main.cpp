@@ -2703,6 +2703,11 @@ void process_commands()
 	    led.show();
     }
     break;
+    case 423:
+    {
+	    led.clear();
+    }
+    break;
 #endif
     case 500: // M500 Store settings in EEPROM
     {
