@@ -11,6 +11,9 @@ public:
 	~Led(); 
 	void bootAnimation();
 	Adafruit_NeoPixel *pixels;
+	void setPixel(uint16_t i,uint8_t r, uint8_t g,uint8_t b);
+	void clear();
+	void show();
 private:
 };
 

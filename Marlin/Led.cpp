@@ -21,3 +21,19 @@ void Led::bootAnimation()
 		delay(100); // Delay for a period of time (in milliseconds).
 	}
 }
+
+
+void Led::setPixel(uint16_t index,uint8_t r, uint8_t g, uint8_t b) 
+{
+	pixels->setPixelColor(index,pixels->Color(r,g,b));
+}
+
+void Led::show() 
+{
+	pixels->show();
+}
+
+void Led::clear() 
+{
+	pixels->clear();
+}

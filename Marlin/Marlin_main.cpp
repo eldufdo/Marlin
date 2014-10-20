@@ -159,6 +159,7 @@
 // M400 - Finish all moves
 // M401 - Lower z-probe if present
 // M402 - Raise z-probe if present
+// M421 - set Pixel color for leds
 // M500 - stores paramters in EEPROM
 // M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
 // M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.
@@ -2660,6 +2661,46 @@ void process_commands()
     case 402:
     {
         retract_z_probe();    // Retract Z Servo endstop if enabled
+    }
+    break;
+#endif
+#ifdef ENABLE_WS2812
+    case 421:
+    {
+	uint8_t index = -1;
+	uint8_t r = -1;
+	uint8_t g = -1;
+	uint8_t b = -1;
+	if (code_seen('I')) 
+	{
+		index = code_value();
+	}
+	if (index < 0 || index >= WS2812_NUM_LEDS)  
+	{
+		break;
+	}
+	if (code_seen('R')) 
+	{
+		r = code_value();
+	}
+	if (code_seen('G')) 
+	{
+		g = code_value();
+	}
+	if (code_seen('B')) 
+	{
+		b = code_value();
+	}
+	if (r < 0 || g < 0 || b < 0) 
+	{
+		break;
+	}
+	led.setPixel(index,r,g,b);
+    }
+    break;
+    case 422:
+    {
+	    led.show();
     }
     break;
 #endif
