@@ -10,6 +10,7 @@
 
 int8_t encoderDiff; /* encoderDiff is updated from interrupt context and added to encoderPosition every LCD update */
 
+uint8_t lcd_status_message_level;
 /* Configuration settings */
 int plaPreheatHotendTemp;
 int plaPreheatHPBTemp;
@@ -29,7 +30,6 @@ static float manual_feedrate[] = MANUAL_FEEDRATE;
 //Function pointer to menu functions.
 typedef void (*menuFunc_t)();
 
-uint8_t lcd_status_message_level;
 char lcd_status_message[LCD_WIDTH+1] = WELCOME_MSG;
 
 #ifdef DOGLCD

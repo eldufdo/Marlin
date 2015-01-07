@@ -920,7 +920,7 @@ static void run_z_probe() {
     int direction = -1;
     // Consider the glass touched if the raw ADC value is reduced by 5% or more.
     int analog_fsr_untouched = rawBedSample();
-    int threshold = ((double) analog_fsr_untouched * 93L) / 100;
+    int threshold = ((double) analog_fsr_untouched * 94L) / 100;
     while (!touching_print_surface(threshold)) {
       destination[Z_AXIS] += step * direction;
       prepare_move_raw();
@@ -1112,7 +1112,7 @@ static float probe_pt(float x, float y, float z_before) {
 #ifdef SERVO_ENDSTOPS
   engage_z_probe();   // Engage Z Servo endstop if available
 #endif //SERVO_ENDSTOPS
-  float measured_z_0, measured_z_1;
+  float measured_z_0;
   
   run_z_probe();
   do {
@@ -1137,6 +1137,12 @@ static float probe_pt(float x, float y, float z_before) {
   SERIAL_PROTOCOL(y);
   SERIAL_PROTOCOLPGM(" z0: ");
   SERIAL_PROTOCOL(measured_z_0);
+  char stext[16];
+  int left_digits, right_digits;
+  left_digits = (int) measured_z_0;
+  right_digits = ((int) (measured_z_0 * 100))%100;
+  sprintf(stext,"ProbeZ: %d.%d",left_digits,right_digits);
+  lcd_setstatus(stext);
 #ifdef FSR_BED_LEVELING
   SERIAL_PROTOCOLPGM(" FSR: ");
   SERIAL_PROTOCOL(rawBedSample());
@@ -1298,9 +1304,6 @@ void process_commands()
 {
   unsigned long codenum; //throw away variable
   char *starpos = NULL;
-#ifdef ENABLE_AUTO_BED_LEVELING
-  float x_tmp, y_tmp, z_tmp, real_z;
-#endif
   if(code_seen('G'))
   {
     switch((int)code_value())
@@ -1388,6 +1391,9 @@ void process_commands()
 #ifdef ENABLE_AUTO_BED_LEVELING
     case 29: // G29 Detailed Z-Probe, probes the bed at 3 or more points.
         {
+	    if (homed == 0) {
+		home_printer();
+	    }
             #if Z_MIN_PIN == -1
             #error "You must have a Z_MIN endstop in order to enable Auto Bed Leveling feature!!! Z_MIN_PIN must point to a valid hardware pin."
             #endif
@@ -1416,7 +1422,7 @@ void process_commands()
             setup_for_endstop_move();
 
             feedrate = homing_feedrate[Z_AXIS];
-            feedrate = 3000;
+            feedrate = 6000;
 #ifdef ACCURATE_BED_LEVELING
             // solve the plane equation ax + by + d = z
             // A is the matrix with rows [x y 1] for all the probed points
