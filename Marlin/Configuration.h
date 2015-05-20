@@ -106,10 +106,10 @@
 #define DELTA_SEGMENTS_PER_SECOND 100
 
 // Center-to-center distance of the holes in the diagonal push rods.
-#define DELTA_DIAGONAL_ROD 292.18 // mm
+#define DELTA_DIAGONAL_ROD 281.46 // mm 292.18
 
 // Horizontal offset from middle of printer to smooth rod center.
-#define DELTA_SMOOTH_ROD_OFFSET 217.0 // mm
+#define DELTA_SMOOTH_ROD_OFFSET 211.9 // mm //217
 
 // Horizontal offset of the universal joints on the end effector.
 #define DELTA_EFFECTOR_OFFSET 40.0 // mm
@@ -121,7 +121,7 @@
 #define DELTA_RADIUS (DELTA_SMOOTH_ROD_OFFSET-DELTA_EFFECTOR_OFFSET-DELTA_CARRIAGE_OFFSET)
 
 // Print surface diameter/2 minus unreachable space (avoid collisions with vertical towers).
-#define DELTA_PRINTABLE_RADIUS 170.0
+#define DELTA_PRINTABLE_RADIUS 130.0
 
 // Effective X/Y positions of the three vertical towers.
 #define SIN_60 0.8660254037844386
@@ -387,7 +387,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
   // these are the offsets to the probe relative to the extruder tip (Hotend - Probe)
   #define X_PROBE_OFFSET_FROM_EXTRUDER 0.0
   #define Y_PROBE_OFFSET_FROM_EXTRUDER 0.0
-  #define Z_PROBE_OFFSET_FROM_EXTRUDER 0.30  // Increase this if the first layer is too thin.
+//  #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.25  // Increase this if the first layer is too thin.
+  #define Z_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT -0.35  // Increase this if the first layer is too thin.
 
   #define Z_RAISE_BEFORE_HOMING 4       // (in mm) Raise Z before homing (G28) for Probe Clearance.
                                         // Be sure you have this distance over your Z_MAX_POS in case
@@ -451,7 +452,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 // For deltabots this means top and center of the Cartesian print volume.
 #define MANUAL_X_HOME_POS 0
 #define MANUAL_Y_HOME_POS 0
-#define MANUAL_Z_HOME_POS 346.51  // Distance between nozzle and print surface after homing.
+//#define MANUAL_Z_HOME_POS 350.10  // Distance between nozzle and print surface after homing.
+#define MANUAL_Z_HOME_POS 349.70  // Distance between nozzle and print surface after homing.
 
 //// MOVEMENT SETTINGS
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
@@ -465,7 +467,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define XYZ_PULLEY_TEETH 16
 #define XYZ_STEPS (XYZ_FULL_STEPS_PER_ROTATION * XYZ_MICROSTEPS / double(XYZ_BELT_PITCH) / double(XYZ_PULLEY_TEETH))
 
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {80,80,80, 544}
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {80,80,80, 544} // 544
 #define DEFAULT_MAX_FEEDRATE          {200, 200, 200, 200}    // (mm/sec)
 #define DEFAULT_MAX_ACCELERATION      {9000,9000,9000,9000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for skeinforge 40+, for older versions raise them a lot.
 

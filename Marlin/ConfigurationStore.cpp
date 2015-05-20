@@ -284,7 +284,7 @@ void Config_ResetDefault()
     absPreheatFanSpeed = ABS_PREHEAT_FAN_SPEED;
 #endif
 #ifdef ENABLE_AUTO_BED_LEVELING
-    zprobe_zoffset = -Z_PROBE_OFFSET_FROM_EXTRUDER;
+    zprobe_zoffset = -Z_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT;
     accurate_bed_leveling_points = ACCURATE_BED_LEVELING_POINTS;
 #endif
 #ifdef DOGLCD

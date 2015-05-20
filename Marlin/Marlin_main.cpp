@@ -920,7 +920,7 @@ static void run_z_probe() {
     int direction = -1;
     // Consider the glass touched if the raw ADC value is reduced by 5% or more.
     int analog_fsr_untouched = rawBedSample();
-    int threshold = ((double) analog_fsr_untouched * 94L) / 100;
+    int threshold = ((double) analog_fsr_untouched * 85L) / 100;
     while (!touching_print_surface(threshold)) {
       destination[Z_AXIS] += step * direction;
       prepare_move_raw();
@@ -1141,6 +1141,8 @@ static float probe_pt(float x, float y, float z_before) {
   int left_digits, right_digits;
   left_digits = (int) measured_z_0;
   right_digits = ((int) (measured_z_0 * 100))%100;
+  if (right_digits < 0) 
+	right_digits *= -1;
   sprintf(stext,"ProbeZ: %d.%d",left_digits,right_digits);
   lcd_setstatus(stext);
 #ifdef FSR_BED_LEVELING
@@ -1436,11 +1438,13 @@ void process_commands()
             double eqnBVector[accurate_bed_leveling_points*accurate_bed_leveling_points];
 
             #ifdef NONLINEAR_BED_LEVELING
-            float z_offset = Z_PROBE_OFFSET_FROM_EXTRUDER;
+            float z_offset = zprobe_zoffset;
             if (code_seen(axis_codes[Z_AXIS])) {
               z_offset += code_value();
             }
-            SERIAL_PROTOCOLPGM("Nonlinear Ninja\n");
+            SERIAL_PROTOCOLPGM("Nonlinear Ninja with zoffset = ");
+            SERIAL_PROTOCOL(z_offset);
+            SERIAL_PROTOCOLPGM("\n");
             #endif //NONLINEAR_BED_LEVELING
 
             int probePointCounter = 0;
