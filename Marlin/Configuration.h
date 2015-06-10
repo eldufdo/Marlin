@@ -106,7 +106,9 @@
 #define DELTA_SEGMENTS_PER_SECOND 100
 
 // Center-to-center distance of the holes in the diagonal push rods.
-#define DELTA_DIAGONAL_ROD 281.46 // mm 292.18
+// used to calibrate correct dimensions
+// the longer the shorter the dimensions are
+#define DELTA_DIAGONAL_ROD 284.55 // mm 292.18
 
 // Horizontal offset from middle of printer to smooth rod center.
 #define DELTA_SMOOTH_ROD_OFFSET 211.9 // mm //217
@@ -453,7 +455,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MANUAL_X_HOME_POS 0
 #define MANUAL_Y_HOME_POS 0
 //#define MANUAL_Z_HOME_POS 350.10  // Distance between nozzle and print surface after homing.
-#define MANUAL_Z_HOME_POS 349.70  // Distance between nozzle and print surface after homing.
+#define MANUAL_Z_HOME_POS 350.00  // Distance between nozzle and print surface after homing.
 
 //// MOVEMENT SETTINGS
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
