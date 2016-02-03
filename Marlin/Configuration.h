@@ -25,7 +25,7 @@
 
 // This determines the communication speed of the printer
 // This determines the communication speed of the printer
-#define BAUDRATE 250000
+#define BAUDRATE 115200
 
 // This enables the serial port associated to the Bluetooth interface
 //#define BTENABLED              // Enable BT interface on AT90USB devices
@@ -108,10 +108,10 @@
 // Center-to-center distance of the holes in the diagonal push rods.
 // used to calibrate correct dimensions
 // the longer the shorter the dimensions are
-#define DELTA_DIAGONAL_ROD 284.55 // mm 292.18
+#define DELTA_DIAGONAL_ROD 277.74// mm 292.18
 
 // Horizontal offset from middle of printer to smooth rod center.
-#define DELTA_SMOOTH_ROD_OFFSET 211.9 // mm //217
+#define DELTA_SMOOTH_ROD_OFFSET 211.35 // mm //217
 
 // Horizontal offset of the universal joints on the end effector.
 #define DELTA_EFFECTOR_OFFSET 40.0 // mm
@@ -346,10 +346,10 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define DISABLE_Z false
 #define DISABLE_E false // For all extruders
 
-#define INVERT_X_DIR false    // for Mendel set to false, for Orca set to true
-#define INVERT_Y_DIR false    // for Mendel set to true, for Orca set to false
-#define INVERT_Z_DIR false    // for Mendel set to false, for Orca set to true
-#define INVERT_E0_DIR false   // for direct drive extruder v9 set to true, for geared extruder set to false
+#define INVERT_X_DIR false// for Mendel set to false, for Orca set to true
+#define INVERT_Y_DIR false// for Mendel set to true, for Orca set to false
+#define INVERT_Z_DIR false// for Mendel set to false, for Orca set to true
+#define INVERT_E0_DIR true // for direct drive extruder v9 set to true, for geared extruder set to false
 #define INVERT_E1_DIR false   // for direct drive extruder v9 set to true, for geared extruder set to false
 #define INVERT_E2_DIR false   // for direct drive extruder v9 set to true, for geared extruder set to false
 
@@ -455,7 +455,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MANUAL_X_HOME_POS 0
 #define MANUAL_Y_HOME_POS 0
 //#define MANUAL_Z_HOME_POS 350.10  // Distance between nozzle and print surface after homing.
-#define MANUAL_Z_HOME_POS 350.00  // Distance between nozzle and print surface after homing.
+#define MANUAL_Z_HOME_POS 355.9 // Distance between nozzle and print surface after homing.
 
 //// MOVEMENT SETTINGS
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
