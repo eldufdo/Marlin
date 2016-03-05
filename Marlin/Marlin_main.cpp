@@ -941,7 +941,7 @@ static void run_z_probe() {
     int direction = -1;
     // Consider the glass touched if the raw ADC value is reduced by 5% or more.
     int analog_fsr_untouched = rawBedSample();
-    int threshold = ((double) analog_fsr_untouched * 94L) / 100;
+    int threshold = ((double) analog_fsr_untouched * 85L) / 100;
     while (!touching_print_surface(threshold)) {
         destination[Z_AXIS] += step * direction;
         prepare_move_raw();
@@ -1215,19 +1215,21 @@ static float probe_pt(float x, float y, float z_before) {
     retract_z_probe();
 #endif //SERVO_ENDSTOPS
 
-    SERIAL_PROTOCOLPGM(MSG_BED);
-    SERIAL_PROTOCOLPGM(" x: ");
-    SERIAL_PROTOCOL(x);
-    SERIAL_PROTOCOLPGM(" y: ");
-    SERIAL_PROTOCOL(y);
-    SERIAL_PROTOCOLPGM(" z0: ");
-    SERIAL_PROTOCOL(measured_z_0);
-    char stext[16];
-    int left_digits, right_digits;
-    left_digits = (int) measured_z_0;
-    right_digits = ((int) (measured_z_0 * 100))%100;
-    sprintf(stext,"ProbeZ: %d.%d",left_digits,right_digits);
-    lcd_setstatus(stext);
+  SERIAL_PROTOCOLPGM(MSG_BED);
+  SERIAL_PROTOCOLPGM(" x: ");
+  SERIAL_PROTOCOL(x);
+  SERIAL_PROTOCOLPGM(" y: ");
+  SERIAL_PROTOCOL(y);
+  SERIAL_PROTOCOLPGM(" z0: ");
+  SERIAL_PROTOCOL(measured_z_0);
+  char stext[16];
+  int left_digits, right_digits;
+  left_digits = (int) measured_z_0;
+  right_digits = ((int) (measured_z_0 * 100))%100;
+  if (right_digits < 0) 
+	right_digits *= -1;
+  sprintf(stext,"ProbeZ: %d.%d",left_digits,right_digits);
+  lcd_setstatus(stext);
 #ifdef FSR_BED_LEVELING
     SERIAL_PROTOCOLPGM(" FSR: ");
     SERIAL_PROTOCOL(rawBedSample());
@@ -1550,29 +1552,33 @@ void process_commands()
                     feedrate = homing_feedrate[Z_AXIS];
                     feedrate = 6000;
 #ifdef ACCURATE_BED_LEVELING
-                    // solve the plane equation ax + by + d = z
-                    // A is the matrix with rows [x y 1] for all the probed points
-                    // B is the vector of the Z positions
-                    // the normal vector to the plane is formed by the coefficients of the plane equation in the standard form, which is Vx*x+Vy*y+Vz*z+d = 0
-                    // so Vx = -a Vy = -b Vz = 1 (we want the vector facing towards positive Z
+            // solve the plane equation ax + by + d = z
+            // A is the matrix with rows [x y 1] for all the probed points
+            // B is the vector of the Z positions
+            // the normal vector to the plane is formed by the coefficients of the plane equation in the standard form, which is Vx*x+Vy*y+Vz*z+d = 0
+            // so Vx = -a Vy = -b Vz = 1 (we want the vector facing towards positive Z
 
-                    // "A" matrix of the linear system of equations
-                    double eqnAMatrix[accurate_bed_leveling_points*accurate_bed_leveling_points*3];
-                    // "B" vector of Z points
-                    double eqnBVector[accurate_bed_leveling_points*accurate_bed_leveling_points];
+            // "A" matrix of the linear system of equations
+            double eqnAMatrix[accurate_bed_leveling_points*accurate_bed_leveling_points*3];
+            // "B" vector of Z points
+            double eqnBVector[accurate_bed_leveling_points*accurate_bed_leveling_points];
 
-#ifdef NONLINEAR_BED_LEVELING
-                    float z_offset = Z_PROBE_OFFSET_FROM_EXTRUDER;
-                    if (code_seen(axis_codes[Z_AXIS])) {
-                        z_offset += code_value();
-                    }
-                    SERIAL_PROTOCOLPGM("Nonlinear Ninja\n");
-#endif //NONLINEAR_BED_LEVELING
+            #ifdef NONLINEAR_BED_LEVELING
+            float z_offset = zprobe_zoffset;
+            if (code_seen(axis_codes[Z_AXIS])) {
+              z_offset += code_value();
+            }
+            SERIAL_PROTOCOLPGM("Nonlinear Ninja with zoffset = ");
+            SERIAL_PROTOCOL(z_offset);
+            SERIAL_PROTOCOLPGM("\n");
+            #endif //NONLINEAR_BED_LEVELING
 
-                    int probePointCounter = 0;
-
-                    SERIAL_PROTOCOLPGM("Accurate Points: ");
-                    SERIAL_PROTOCOL(accurate_bed_leveling_points);
+            int probePointCounter = 0;
+		
+            SERIAL_PROTOCOLPGM("Accurate Points: ");
+            SERIAL_PROTOCOL(accurate_bed_leveling_points);
+            for (int yCount=0; yCount < accurate_bed_leveling_points; yCount++)
+            {
                     for (int yCount=0; yCount < accurate_bed_leveling_points; yCount++)
                     {
 
