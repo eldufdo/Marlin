@@ -3,6 +3,7 @@
 
 #include "Configuration.h"
 
+extern float **bed_level_eeprom;
 void Config_ResetDefault();
 
 #ifndef DISABLE_M503

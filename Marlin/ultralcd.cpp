@@ -46,6 +46,7 @@ void probe_points_changed();
 
 /* Different menus */
 static void lcd_status_screen();
+bool ignore_click = false;
 #ifdef ULTIPANEL
 extern bool powersupply;
 static void lcd_main_menu();
@@ -192,7 +193,7 @@ static void lcd_status_screen()
         lcd_status_update_delay = 10;   /* redraw the main screen every second. This is easier then trying keep track of all things that change on the screen */
     }
 #ifdef ULTIPANEL
-    if (LCD_CLICKED)
+    if (LCD_CLICKED && ignore_click == false)
     {
         currentMenu = lcd_main_menu;
         encoderPosition = 0;

@@ -4,6 +4,10 @@
 #include "ultralcd.h"
 #include "ConfigurationStore.h"
 
+
+
+float **bed_level_eeprom;
+
 void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size)
 {
     do
@@ -40,6 +44,28 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 #define EEPROM_VERSION "V10"
 
 #ifdef EEPROM_SETTINGS
+
+uint8_t convert_to_eeprom_z(float z_val) {
+        uint8_t z = (uint8_t) (z_val / 0.05);
+        if (z_val < 0) {
+                z = z | 128;
+        }
+        SERIAL_PROTOCOL_F(z_val, 2);
+        SERIAL_PROTOCOLPGM("/");
+	SERIAL_ECHO(z);
+        SERIAL_PROTOCOLPGM("\n");
+        return z;
+}
+
+float convert_from_eeprom_z(uint8_t z_val) {
+        float z = z_val * 0.05;
+        if (z_val > 127)
+                z = -z;
+        return z;
+}
+
+
+
 void Config_StoreSettings() 
 {
   char ver[4]= "000";
@@ -72,6 +98,15 @@ void Config_StoreSettings()
   EEPROM_WRITE_VAR(i,absPreheatFanSpeed);
   EEPROM_WRITE_VAR(i,zprobe_zoffset);
   EEPROM_WRITE_VAR(i,accurate_bed_leveling_points);
+ 
+  /* STORE AUTO BED LEVELING EEPROM */
+	for (int y = 0; y < accurate_bed_leveling_points; y++) {
+		for (int x = 0; x < accurate_bed_leveling_points; x++) {
+		  // uint8_t z_val = convert_to_eeprom_z(bed_level_eeprom[x][y]);
+		   EEPROM_WRITE_VAR(i, bed_level_eeprom[x][y]);
+		}
+	}
+
   #ifdef PIDTEMP
     EEPROM_WRITE_VAR(i,Kp);
     EEPROM_WRITE_VAR(i,Ki);
@@ -165,6 +200,7 @@ void Config_PrintSettings()
     SERIAL_ECHOPGM("Auto Bed Leveling: ");
     SERIAL_ECHO(accurate_bed_leveling_points);
     SERIAL_ECHOLN("");
+	
 #endif
 #ifdef PIDTEMP
     SERIAL_ECHO_START;
@@ -221,6 +257,16 @@ void Config_RetrieveSettings()
         EEPROM_READ_VAR(i,absPreheatFanSpeed);
         EEPROM_READ_VAR(i,zprobe_zoffset);
         EEPROM_READ_VAR(i,accurate_bed_leveling_points);
+
+        /* LOAD AUTO BED LEVELING EEPROM */
+        
+	for (int y = 0; y < accurate_bed_leveling_points; y++) {
+		for (int x = 0; x < accurate_bed_leveling_points; x++) {
+		       float eeprom_val;
+		       EEPROM_READ_VAR(i, eeprom_val);
+		       bed_level_eeprom[x][y] = eeprom_val;
+		}
+	}	
         #ifndef PIDTEMP
         float Kp,Ki,Kd;
         #endif

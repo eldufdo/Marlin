@@ -35,6 +35,9 @@
   FORCE_INLINE void lcd_buttons_update() {}
   #endif
 
+  extern bool ignore_click;
+  extern uint32_t encoderPosition;
+  extern int8_t encoderDiff;
   extern int plaPreheatHotendTemp;
   extern int plaPreheatHPBTemp;
   extern int plaPreheatFanSpeed;
