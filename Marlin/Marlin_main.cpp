@@ -1577,8 +1577,6 @@ void process_commands()
 		
             SERIAL_PROTOCOLPGM("Accurate Points: ");
             SERIAL_PROTOCOL(accurate_bed_leveling_points);
-            for (int yCount=0; yCount < accurate_bed_leveling_points; yCount++)
-            {
                     for (int yCount=0; yCount < accurate_bed_leveling_points; yCount++)
                     {
 
