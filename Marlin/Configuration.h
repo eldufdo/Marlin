@@ -76,7 +76,7 @@
 #endif
 
 // Define this to set a custom name for your generic Mendel,
-#define CUSTOM_MENDEL_NAME "sur3d"
+#define CUSTOM_MENDEL_NAME "maniac"
 
 // Define this to set a unique identifier for this printer, (Used by some programs to differentiate between machines)
 // You can use an online service to generate a random UUID. (eg http://www.uuidgenerator.net/version4)
@@ -194,7 +194,7 @@
 #define HEATER_1_MINTEMP 5
 #define HEATER_2_MINTEMP 5
 #define BED_MINTEMP 1
-
+#define MANUAL_BED_LEVEL 1
 // When temperature exceeds max temp, your heater will be switched off.
 // This feature exists to protect your hotend from overheating accidentally, but *NOT* from thermistor short/failure!
 // You should use MINTEMP for thermistor short/failure protection.
@@ -379,17 +379,12 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
 #ifdef ENABLE_AUTO_BED_LEVELING
 
-  // these are the positions on the bed to do the probing
-  #define DELTA_PROBABLE_RADIUS (DELTA_PRINTABLE_RADIUS*0.75)
-  //#define LEFT_PROBE_BED_POSITION -DELTA_PRINTABLE_RADIUS
-  //#define RIGHT_PROBE_BED_POSITION DELTA_PRINTABLE_RADIUS
-  //#define BACK_PROBE_BED_POSITION DELTA_PRINTABLE_RADIUS
-  //#define FRONT_PROBE_BED_POSITION -DELTA_PRINTABLE_RADIUS
+  #define DELTA_PROBABLE_RADIUS (DELTA_PRINTABLE_RADIUS)
+  #define LEFT_PROBE_BED_POSITION -DELTA_PRINTABLE_RADIUS
+  #define RIGHT_PROBE_BED_POSITION DELTA_PRINTABLE_RADIUS
+  #define BACK_PROBE_BED_POSITION DELTA_PRINTABLE_RADIUS
+  #define FRONT_PROBE_BED_POSITION -DELTA_PRINTABLE_RADIUS
 
-  #define LEFT_PROBE_BED_POSITION -DELTA_PROBABLE_RADIUS
-  #define RIGHT_PROBE_BED_POSITION DELTA_PROBABLE_RADIUS
-  #define BACK_PROBE_BED_POSITION DELTA_PROBABLE_RADIUS
-  #define FRONT_PROBE_BED_POSITION -DELTA_PROBABLE_RADIUS
   // these are the offsets to the probe relative to the extruder tip (Hotend - Probe)
   #define X_PROBE_OFFSET_FROM_EXTRUDER 20
   #define Y_PROBE_OFFSET_FROM_EXTRUDER -35.0
