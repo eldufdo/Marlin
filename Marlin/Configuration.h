@@ -114,16 +114,16 @@
 #define DELTA_SMOOTH_ROD_OFFSET 211.35 // mm //217
 
 // Horizontal offset of the universal joints on the end effector.
-#define DELTA_EFFECTOR_OFFSET 40.0 // mm
+#define DELTA_EFFECTOR_OFFSET 45.0 // mm
 
 // Horizontal offset of the universal joints on the carriages.
-#define DELTA_CARRIAGE_OFFSET 42.0 // mm
+#define DELTA_CARRIAGE_OFFSET 37.0 // mm
 
 // Horizontal distance bridged by diagonal push rods when effector is centered.
 #define DELTA_RADIUS (DELTA_SMOOTH_ROD_OFFSET-DELTA_EFFECTOR_OFFSET-DELTA_CARRIAGE_OFFSET)
 
 // Print surface diameter/2 minus unreachable space (avoid collisions with vertical towers).
-#define DELTA_PRINTABLE_RADIUS 130.0
+#define DELTA_PRINTABLE_RADIUS 100.0
 
 // Effective X/Y positions of the three vertical towers.
 #define SIN_60 0.8660254037844386
@@ -298,16 +298,16 @@
 // #define COREXY
 
 // coarse Endstop Settings
-#define ENDSTOPPULLUPS // Comment this out (using // at the start of the line) to disable the endstop pullup resistors
+//#define ENDSTOPPULLUPS // Comment this out (using // at the start of the line) to disable the endstop pullup resistors
 
 #ifndef ENDSTOPPULLUPS
   // fine endstop settings: Individual pullups. will be ignored if ENDSTOPPULLUPS is defined
-  // #define ENDSTOPPULLUP_XMAX
-  // #define ENDSTOPPULLUP_YMAX
-  // #define ENDSTOPPULLUP_ZMAX
-  // #define ENDSTOPPULLUP_XMIN
-  // #define ENDSTOPPULLUP_YMIN
-  // #define ENDSTOPPULLUP_ZMIN
+#define ENDSTOPPULLUP_XMAX
+#define ENDSTOPPULLUP_YMAX
+#define ENDSTOPPULLUP_ZMAX
+#define ENDSTOPPULLUP_XMIN
+#define ENDSTOPPULLUP_YMIN
+// #define ENDSTOPPULLUP_ZMIN
 #endif
 
 #ifdef ENDSTOPPULLUPS
@@ -380,17 +380,21 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #ifdef ENABLE_AUTO_BED_LEVELING
 
   // these are the positions on the bed to do the probing
-  #define DELTA_PROBABLE_RADIUS (DELTA_PRINTABLE_RADIUS*0.9)
-  #define LEFT_PROBE_BED_POSITION -DELTA_PRINTABLE_RADIUS
-  #define RIGHT_PROBE_BED_POSITION DELTA_PRINTABLE_RADIUS
-  #define BACK_PROBE_BED_POSITION DELTA_PRINTABLE_RADIUS
-  #define FRONT_PROBE_BED_POSITION -DELTA_PRINTABLE_RADIUS
+  #define DELTA_PROBABLE_RADIUS (DELTA_PRINTABLE_RADIUS*0.75)
+  //#define LEFT_PROBE_BED_POSITION -DELTA_PRINTABLE_RADIUS
+  //#define RIGHT_PROBE_BED_POSITION DELTA_PRINTABLE_RADIUS
+  //#define BACK_PROBE_BED_POSITION DELTA_PRINTABLE_RADIUS
+  //#define FRONT_PROBE_BED_POSITION -DELTA_PRINTABLE_RADIUS
 
+  #define LEFT_PROBE_BED_POSITION -DELTA_PROBABLE_RADIUS
+  #define RIGHT_PROBE_BED_POSITION DELTA_PROBABLE_RADIUS
+  #define BACK_PROBE_BED_POSITION DELTA_PROBABLE_RADIUS
+  #define FRONT_PROBE_BED_POSITION -DELTA_PROBABLE_RADIUS
   // these are the offsets to the probe relative to the extruder tip (Hotend - Probe)
-  #define X_PROBE_OFFSET_FROM_EXTRUDER 0.0
-  #define Y_PROBE_OFFSET_FROM_EXTRUDER 0.0
+  #define X_PROBE_OFFSET_FROM_EXTRUDER 20
+  #define Y_PROBE_OFFSET_FROM_EXTRUDER -35.0
 //  #define Z_PROBE_OFFSET_FROM_EXTRUDER -0.25  // Increase this if the first layer is too thin.
-  #define Z_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT -0.35  // Increase this if the first layer is too thin.
+  #define Z_PROBE_OFFSET_FROM_EXTRUDER_DEFAULT 0.6  // Increase this if the first layer is too thin.
 
   #define Z_RAISE_BEFORE_HOMING 4       // (in mm) Raise Z before homing (G28) for Probe Clearance.
                                         // Be sure you have this distance over your Z_MAX_POS in case
@@ -442,7 +446,8 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 
   // Force Sensing Resistors under the print surface, wired to heated bed thermistor input.
   // Autolevel by measuring how much the hotend is pushing down, without separate Z probe.
-  #define FSR_BED_LEVELING
+//#define FSR_BED_LEVELING
+#define CAP_BED_LEVELING
 #endif
 
 
@@ -455,7 +460,7 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #define MANUAL_X_HOME_POS 0
 #define MANUAL_Y_HOME_POS 0
 //#define MANUAL_Z_HOME_POS 350.10  // Distance between nozzle and print surface after homing.
-#define MANUAL_Z_HOME_POS 355.9 // Distance between nozzle and print surface after homing.
+#define MANUAL_Z_HOME_POS 359.1 // Distance between nozzle and print surface after homing.
 
 //// MOVEMENT SETTINGS
 #define NUM_AXIS 4 // The axis order in all axis related arrays is X, Y, Z, E
