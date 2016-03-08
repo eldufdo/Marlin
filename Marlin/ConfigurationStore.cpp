@@ -5,8 +5,8 @@
 #include "ConfigurationStore.h"
 
 
+float bed_level_eeprom[ACCURATE_BED_LEVELING_POINTS][ACCURATE_BED_LEVELING_POINTS];
 
-float **bed_level_eeprom;
 
 void _EEPROM_writeData(int &pos, uint8_t* value, uint8_t size)
 {
@@ -41,30 +41,19 @@ void _EEPROM_readData(int &pos, uint8_t* value, uint8_t size)
 // the default values are used whenever there is a change to the data, to prevent
 // wrong data being written to the variables.
 // ALSO:  always make sure the variables in the Store and retrieve sections are in the same order.
-#define EEPROM_VERSION "V10"
+#define EEPROM_VERSION "V14"
 
 #ifdef EEPROM_SETTINGS
 
-uint8_t convert_to_eeprom_z(float z_val) {
-        uint8_t z = (uint8_t) (z_val / 0.05);
-        if (z_val < 0) {
-                z = z | 128;
+void print_bed_level_eeprom() {
+    for (int y = 0; y < accurate_bed_leveling_points; y++) {
+        for (int x = 0; x < accurate_bed_leveling_points; x++) {
+            SERIAL_PROTOCOL_F(bed_level_eeprom[x][y], 2);
+            SERIAL_PROTOCOLPGM(" ");
         }
-        SERIAL_PROTOCOL_F(z_val, 2);
-        SERIAL_PROTOCOLPGM("/");
-	SERIAL_ECHO(z);
-        SERIAL_PROTOCOLPGM("\n");
-        return z;
+        SERIAL_ECHOLN("");
+    }
 }
-
-float convert_from_eeprom_z(uint8_t z_val) {
-        float z = z_val * 0.05;
-        if (z_val > 127)
-                z = -z;
-        return z;
-}
-
-
 
 void Config_StoreSettings() 
 {
@@ -200,6 +189,8 @@ void Config_PrintSettings()
     SERIAL_ECHOPGM("Auto Bed Leveling: ");
     SERIAL_ECHO(accurate_bed_leveling_points);
     SERIAL_ECHOLN("");
+    print_bed_level_eeprom();
+    SERIAL_ECHOLN("");
 	
 #endif
 #ifdef PIDTEMP
@@ -215,7 +206,35 @@ void Config_PrintSettings()
 #endif
 
 
+
+
+
+
 #ifdef EEPROM_SETTINGS
+
+void bed_level_eeprom_init() 
+{
+    uint8_t i,j;
+    /*bed_level_eeprom = (float **) malloc(sizeof(float *) * accurate_bed_leveling_points);	
+    for (i = 0; i < accurate_bed_leveling_points;i++) {
+        bed_level_eeprom[i] = (float *) malloc(sizeof(float) * accurate_bed_leveling_points);
+    }*/
+    for (i = 0; i < accurate_bed_leveling_points; i++) {
+        for (j = 0; j < accurate_bed_leveling_points; j++) {
+            bed_level_eeprom[i][j] = 0;
+        }
+    }
+}
+
+// Reset calibration results to zero.
+void reset_bed_level_eeprom() {
+    for (int y = 0; y < accurate_bed_leveling_points; y++) {
+        for (int x = 0; x < accurate_bed_leveling_points; x++) {
+            bed_level_eeprom[x][y] = 0.0;
+        }
+    }
+}
+
 void Config_RetrieveSettings()
 {
     int i=EEPROM_OFFSET;
@@ -260,6 +279,8 @@ void Config_RetrieveSettings()
 
         /* LOAD AUTO BED LEVELING EEPROM */
         
+        bed_level_eeprom_init();
+	reset_bed_level_eeprom();
 	for (int y = 0; y < accurate_bed_leveling_points; y++) {
 		for (int x = 0; x < accurate_bed_leveling_points; x++) {
 		       float eeprom_val;

@@ -245,7 +245,6 @@ bool powersupply = true;
 #endif
 #endif
 
-static void reset_bed_level_eeprom();
 #ifdef DELTA
 float delta[3] = {0.0, 0.0, 0.0};
 #endif
@@ -484,8 +483,6 @@ void setup()
     accurate_bed_leveling_points = ACCURATE_BED_LEVELING_POINTS;
     #ifdef NONLINEAR_BED_LEVELING
 	    bed_level_init();
-	    bed_level_eeprom_init();
-	    reset_bed_level_eeprom();
     #endif
     // loads data from EEPROM if available else uses defaults (and resets step acceleration rate)
     Config_RetrieveSettings();
@@ -749,22 +746,6 @@ void bed_level_init()
     accurate_bed_leveling_grid_y = ((BACK_PROBE_BED_POSITION - FRONT_PROBE_BED_POSITION) / (accurate_bed_leveling_points- 1));
 
 }
-
-void bed_level_eeprom_init() 
-{
-    bed_level_eeprom = (float **) malloc(sizeof(float *) * accurate_bed_leveling_points);	
-    uint8_t i,j;
-    for (i = 0; i < accurate_bed_leveling_points;i++) {
-        bed_level_eeprom[i] = (float *) malloc(sizeof(float) * accurate_bed_leveling_points);
-    }
-    for (i = 0; i < accurate_bed_leveling_points; i++) {
-        for (j = 0; j < accurate_bed_leveling_points; j++) {
-            bed_level_eeprom[i][j] = 0;
-        }
-    }
-}
-
-
 
 float code_value()
 {
@@ -1051,6 +1032,9 @@ static void clean_up_after_endstop_move() {
 
 static void engage_z_probe() {
     // Engage Z Servo endstop if enabled
+#ifdef MANUAL_BED_LEVEL
+	return;
+#endif
 #ifdef FSR_BED_LEVELING
     return;
 #endif
@@ -1082,6 +1066,9 @@ static void engage_z_probe() {
 
 static void retract_z_probe() {
     // Retract Z Servo endstop if enabled
+#ifdef MANUAL_BED_LEVEL
+	return;
+#endif
 #ifdef FSR_BED_LEVELING
     return;
 #endif
@@ -1285,16 +1272,6 @@ static void print_bed_level() {
     }
 }
 
-static void print_bed_level_eeprom() {
-    for (int y = 0; y < accurate_bed_leveling_points; y++) {
-        for (int x = 0; x < accurate_bed_leveling_points; x++) {
-            SERIAL_PROTOCOL_F(bed_level_eeprom[x][y], 2);
-            SERIAL_PROTOCOLPGM(" ");
-        }
-        SERIAL_ECHOLN("");
-    }
-}
-
 // Reset calibration results to zero.
 static void reset_bed_level() {
     for (int y = 0; y < accurate_bed_leveling_points; y++) {
@@ -1304,14 +1281,7 @@ static void reset_bed_level() {
     }
 }
 
-// Reset calibration results to zero.
-static void reset_bed_level_eeprom() {
-    for (int y = 0; y < accurate_bed_leveling_points; y++) {
-        for (int x = 0; x < accurate_bed_leveling_points; x++) {
-            bed_level_eeprom[x][y] = 0.0;
-        }
-    }
-}
+
 #endif //NONLINEAR_BED_LEVELING
 
 static void homeaxis(int axis) {
@@ -1498,8 +1468,24 @@ void process_commands()
             case 29: // G29 Detailed Z-Probe, probes the bed at 3 or more points.
                 {	
 		    if (code_seen('R')) {
+			reset_bed_level_eeprom();
+			return;
+		    }
+		    if (code_seen('P')) {
 			print_bed_level_eeprom();
-			SERIAL_PROTOCOLPGM("Nonlinear Ninja\n");
+			return;
+		    }
+		    if (code_seen('X')) {
+		    	int x = code_value();
+			if (code_seen('Y')) {
+				int y = code_value();
+				if (code_seen('V')) {
+					if (x >= 0 && x < accurate_bed_leveling_points && y >= 0 && y < accurate_bed_leveling_points) {
+						bed_level_eeprom[x][y] = code_value();
+						SERIAL_PROTOCOLPGM("Setting value at x y\n");
+					}
+				}
+			}
 			return;
 		    }
                     if (homed == 0) {
@@ -1580,7 +1566,6 @@ void process_commands()
                     for (int yCount=0; yCount < accurate_bed_leveling_points; yCount++)
                     {
 
-                        SERIAL_PROTOCOLPGM("Y");
                         float yProbe = FRONT_PROBE_BED_POSITION + accurate_bed_leveling_grid_y * yCount;
                         int xStart, xStop, xInc;
                         if (yCount % 2) {
@@ -1595,7 +1580,6 @@ void process_commands()
 
                         for (int xCount=xStart; xCount != xStop; xCount += xInc)
                         {
-                            SERIAL_PROTOCOLPGM("X");
                             float xProbe = LEFT_PROBE_BED_POSITION + accurate_bed_leveling_grid_x * xCount;
 
 #ifdef DELTA

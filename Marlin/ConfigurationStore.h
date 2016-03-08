@@ -3,11 +3,13 @@
 
 #include "Configuration.h"
 
-extern float **bed_level_eeprom;
+//extern float **bed_level_eeprom;
+extern float bed_level_eeprom[ACCURATE_BED_LEVELING_POINTS][ACCURATE_BED_LEVELING_POINTS];
 void Config_ResetDefault();
 
 #ifndef DISABLE_M503
 void Config_PrintSettings();
+
 #else
 FORCE_INLINE void Config_PrintSettings() {}
 #endif
@@ -15,6 +17,9 @@ FORCE_INLINE void Config_PrintSettings() {}
 #ifdef EEPROM_SETTINGS
 void Config_StoreSettings();
 void Config_RetrieveSettings();
+void reset_bed_level_eeprom();
+void print_bed_level_eeprom();
+void init_bed_level_eeprom();
 #else
 FORCE_INLINE void Config_StoreSettings() {}
 FORCE_INLINE void Config_RetrieveSettings() { Config_ResetDefault(); Config_PrintSettings(); }
