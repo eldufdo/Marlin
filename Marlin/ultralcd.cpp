@@ -27,8 +27,6 @@ static float manual_feedrate[] = MANUAL_FEEDRATE;
 
 /* !Configuration settings */
 
-//Function pointer to menu functions.
-typedef void (*menuFunc_t)();
 
 char lcd_status_message[LCD_WIDTH+1] = WELCOME_MSG;
 
@@ -42,7 +40,6 @@ char lcd_status_message[LCD_WIDTH+1] = WELCOME_MSG;
 
 void copy_and_scalePID_i();
 void copy_and_scalePID_d();
-void probe_points_changed();
 
 /* Different menus */
 static void lcd_status_screen();
@@ -466,9 +463,10 @@ static void lcd_bedlevel_menu()
     START_MENU();
     MENU_ITEM(back, MSG_MAIN, lcd_main_menu);
     MENU_ITEM(submenu,MSG_ZPROBE_ZOFFSET,lcd_bed_level_zoffset);
-    MENU_ITEM_EDIT_CALLBACK(int3, MSG_BED_LEVEL_POINTS , &accurate_bed_leveling_points, 1, 15, probe_points_changed);
     MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28"));
     MENU_ITEM(gcode, MSG_AUTO_LEVEL, PSTR("G29"));
+    MENU_ITEM(gcode, MSG_AUTO_LEVEL_READ, PSTR("G29 R"));
+    MENU_ITEM(gcode, MSG_AUTO_LEVEL_LOAD, PSTR("G29 L"));
     MENU_ITEM(gcode, MSG_AUTO_LEVEL_POINT, PSTR("G29"));
     MENU_ITEM(gcode, MSG_STORE_EPROM, PSTR("M500"));
     MENU_ITEM(gcode, MSG_LOAD_EPROM, PSTR("M501"));
@@ -1532,18 +1530,5 @@ void copy_and_scalePID_d()
 #endif
 }
 
-
-#ifdef NONLINEAR_BED_LEVELING
-
-void probe_points_changed() {
-  uint8_t i;
-  for (i = 0; i < accurate_bed_leveling_points;i++) {
-	float * ptr = bed_level[i];
-	free(ptr);
-  }
-  free(bed_level);
-  bed_level_init();
-}
-#endif
 
 #endif //ULTRA_LCD

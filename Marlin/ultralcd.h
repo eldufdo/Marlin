@@ -3,6 +3,12 @@
 
 #include "Marlin.h"
 
+
+
+//Function pointer to menu functions.
+typedef void (*menuFunc_t)();
+
+extern menuFunc_t currentMenu;
 #ifdef ULTRA_LCD
 
   void lcd_update();

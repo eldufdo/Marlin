@@ -253,7 +253,7 @@ float delta[3] = {0.0, 0.0, 0.0};
 int accurate_bed_leveling_points;
 float accurate_bed_leveling_grid_x;
 float accurate_bed_leveling_grid_y;
-float **bed_level;
+float bed_level[ACCURATE_BED_LEVELING_POINTS][ACCURATE_BED_LEVELING_POINTS];
 #endif
 
 //===========================================================================
@@ -731,17 +731,12 @@ void get_command()
 
 void bed_level_init() 
 {
-    bed_level = (float **) malloc(sizeof(float *) * accurate_bed_leveling_points);	
     uint8_t i,j;
-    for (i = 0; i < accurate_bed_leveling_points;i++) {
-        bed_level[i] = (float *) malloc(sizeof(float) * accurate_bed_leveling_points);
-    }
     for (i = 0; i < accurate_bed_leveling_points; i++) {
         for (j = 0; j < accurate_bed_leveling_points; j++) {
             bed_level[i][j] = 0;
         }
     }
-
     accurate_bed_leveling_grid_x = ((RIGHT_PROBE_BED_POSITION - LEFT_PROBE_BED_POSITION) / (accurate_bed_leveling_points- 1));
     accurate_bed_leveling_grid_y = ((BACK_PROBE_BED_POSITION - FRONT_PROBE_BED_POSITION) / (accurate_bed_leveling_points- 1));
 
@@ -1139,7 +1134,7 @@ static float probe_pt(float x, float y, float z_before) {
             st_synchronize();
             encoderDiff = 0;
             encoderPosition = 0;
-            lcd_update();
+	    (*currentMenu)();
         }
         if (encoderDiff <= -enc_steps) {
             destination[Z_AXIS] = current_position[Z_AXIS] - bed_level_step;
@@ -1147,7 +1142,7 @@ static float probe_pt(float x, float y, float z_before) {
             st_synchronize();
             encoderDiff = 0;
             encoderPosition = 0;
-            lcd_update();
+	    (*currentMenu)();
         }
 
         serial_char = 0;
@@ -1174,14 +1169,12 @@ static float probe_pt(float x, float y, float z_before) {
                             destination[Z_AXIS] = current_position[Z_AXIS] - 0.1;
                             prepare_move_raw();
                             st_synchronize();
-                            lcd_update();
                             break;
                         } else if (serial_char == '1') {
                             SERIAL_PROTOCOLPGM("Go up");
                             destination[Z_AXIS] = current_position[Z_AXIS] + 0.1;
                             prepare_move_raw();
                             st_synchronize();
-                            lcd_update();
                             break;
                         } else if ( serial_char == '2') {
                             SERIAL_PROTOCOLPGM("measured z is: ");
