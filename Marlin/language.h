@@ -75,7 +75,7 @@
 	#define MSG_DISABLE_STEPPERS "Disable steppers"
 	#define MSG_AUTO_HOME "Auto home"
 	#define MSG_AUTO_LEVEL "Auto bed leveling"
-	#define MSG_AUTO_LEVEL_READ "ABL Store"
+	#define MSG_AUTO_LEVEL_STORE "ABL Store"
 	#define MSG_AUTO_LEVEL_LOAD "ABL Load"
 	#define MSG_AUTO_LEVEL_POINT "Probe position"
 	#define MSG_SET_ORIGIN "Set origin"

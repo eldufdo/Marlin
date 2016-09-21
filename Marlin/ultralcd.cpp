@@ -465,7 +465,7 @@ static void lcd_bedlevel_menu()
     MENU_ITEM(submenu,MSG_ZPROBE_ZOFFSET,lcd_bed_level_zoffset);
     MENU_ITEM(gcode, MSG_AUTO_HOME, PSTR("G28"));
     MENU_ITEM(gcode, MSG_AUTO_LEVEL, PSTR("G29"));
-    MENU_ITEM(gcode, MSG_AUTO_LEVEL_READ, PSTR("G29 R"));
+    MENU_ITEM(gcode, MSG_AUTO_LEVEL_STORE, PSTR("G29 S"));
     MENU_ITEM(gcode, MSG_AUTO_LEVEL_LOAD, PSTR("G29 L"));
     MENU_ITEM(gcode, MSG_AUTO_LEVEL_POINT, PSTR("G29"));
     MENU_ITEM(gcode, MSG_STORE_EPROM, PSTR("M500"));

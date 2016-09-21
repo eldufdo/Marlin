@@ -108,7 +108,7 @@
 // Center-to-center distance of the holes in the diagonal push rods.
 // used to calibrate correct dimensions
 // the longer the shorter the dimensions are
-#define DELTA_DIAGONAL_ROD 277.74// mm 292.18
+#define DELTA_DIAGONAL_ROD 273.433// mm 292.18
 
 // Horizontal offset from middle of printer to smooth rod center.
 //#define DELTA_SMOOTH_ROD_OFFSET 209.00 // mm //217
@@ -123,7 +123,7 @@
 #define DELTA_RADIUS 126.5
 
 // Print surface diameter/2 minus unreachable space (avoid collisions with vertical towers).
-#define DELTA_PRINTABLE_RADIUS 100.0
+#define DELTA_PRINTABLE_RADIUS 125.0
 
 // Effective X/Y positions of the three vertical towers.
 #define SIN_60 0.8660254037844386
@@ -380,10 +380,10 @@ const bool Z_MAX_ENDSTOP_INVERTING = false; // set to true to invert the logic o
 #ifdef ENABLE_AUTO_BED_LEVELING
 
   #define DELTA_PROBABLE_RADIUS (DELTA_PRINTABLE_RADIUS)
-  #define LEFT_PROBE_BED_POSITION -DELTA_PRINTABLE_RADIUS
+  #define LEFT_PROBE_BED_POSITION - DELTA_PRINTABLE_RADIUS
   #define RIGHT_PROBE_BED_POSITION DELTA_PRINTABLE_RADIUS
   #define BACK_PROBE_BED_POSITION DELTA_PRINTABLE_RADIUS
-  #define FRONT_PROBE_BED_POSITION -DELTA_PRINTABLE_RADIUS
+  #define FRONT_PROBE_BED_POSITION -DELTA_PRINTABLE_RADIUS 
 
   // these are the offsets to the probe relative to the extruder tip (Hotend - Probe)
   #define X_PROBE_OFFSET_FROM_EXTRUDER 0
