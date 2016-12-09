@@ -123,7 +123,7 @@
 #define DELTA_RADIUS 126.5
 
 // Print surface diameter/2 minus unreachable space (avoid collisions with vertical towers).
-#define DELTA_PRINTABLE_RADIUS 125.0
+#define DELTA_PRINTABLE_RADIUS 100.0
 
 // Effective X/Y positions of the three vertical towers.
 #define SIN_60 0.8660254037844386

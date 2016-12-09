@@ -1480,6 +1480,25 @@ void process_commands()
 				}
 			}
 			return;
+		    } else {
+			if (code_seen('V')) {
+				SERIAL_PROTOCOLPGM("Increase matrix!\n");
+				int x = 0;
+				int y = 0;
+				for (y = 0; y < accurate_bed_leveling_points; y++) {
+					for (x = 0; x < accurate_bed_leveling_points; x++) {
+						float yProbe = FRONT_PROBE_BED_POSITION + accurate_bed_leveling_grid_y * y;
+						float xProbe = LEFT_PROBE_BED_POSITION + accurate_bed_leveling_grid_x * x;
+					        float distance_from_center = sqrt(xProbe*xProbe + yProbe*yProbe);
+                            			if (distance_from_center > DELTA_PROBABLE_RADIUS) {
+							// point is not probed do not change it
+							continue;
+			   			}
+						bed_level_eeprom[x][y] += code_value();
+					}
+				}
+				return;
+			}
 		    }
                     if (homed == 0) {
                         home_printer();
