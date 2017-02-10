@@ -4,7 +4,16 @@ Marlin 3D Printer Firmware
 Marlin has a GPL license because I believe in open development.
 Please do not use this code in products (3D printers, CNC etc) that are closed source or are crippled by a patent.
 
-[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=ErikZalm&url=https://github.com/ErikZalm/Marlin&title=Marlin&language=&tags=github&category=software)
+
+Bed Level Calibration
+===================
+G29 P --> print bed level matrix
+
+G29 R --> reset bed level matrix
+
+G29 X0 Y1 V0.3 --> set bed level matrix at position x,y (starting 0) to V
+
+G29 V0.1 --> increase all probable points by V
 
 Quick Information
 ===================
