@@ -15,6 +15,10 @@ G29 X0 Y1 V0.3 --> set bed level matrix at position x,y (starting 0) to V
 
 G29 V0.1 --> increase all probable points by V
 
+G29 L --> load bed level matrix into memory, without this command the bed level matrix is 0 - must be done in gcode after homing G28
+
+G29 S --> Start manual calibration process of all probable points
+
 Quick Information
 ===================
 This RepRap firmware is a mashup between <a href="https://github.com/kliment/Sprinter">Sprinter</a>, <a href="https://github.com/simen/grbl/tree">grbl</a> and many original parts.
